@@ -18,7 +18,7 @@ class Control(threading.Thread):
         self._joystick = None
         self._keyboard = None
         self._cameraPos = False  # позиция камеры
-        self._lightPos = False  # позиция фар
+        self._autoPos = False  # позиция автономки
         self._moveScale = 0.0   # данные о движении робота
         self._turnScale = 0.0
         self._rotateScale = 0.0
@@ -105,18 +105,18 @@ class Control(threading.Thread):
 
                 if key.char == 'c':
                     if self._cameraPos:
-                        self.robot.setCamera(0.4)
+                        self.robot.setCamera(-0.5)
                     else:
-                        self.robot.setCamera(0.0)
+                        self.robot.setCamera(0.4)
                     self._cameraPos = not self._cameraPos
                     self.robot.sendPackage()
 
                 if key.char == 'v':
-                    if self._lightPos:
-                        self.robot.setLight(True)
+                    if not self._autoPos:
+                        self.robot.setAuto(True)
                     else:
-                        self.robot.setLight(False)
-                    self._lightPos = not self._lightPos
+                        self.robot.setAuto(False)
+                    self._autoPos = not self._autoPos
                     self.robot.sendPackage()
                 # изменяем скорость робота
                 if key.char == 'z':

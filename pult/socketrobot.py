@@ -23,12 +23,14 @@ class SocketRobot:
             "turnThirdAxisArg": float(0.0),
             "turnFourthAxisArg": float(0.0),
             "turnFifthAxisArg": float(0.0),
-            "setLightArg": bool(False)
+            "AutoArg": bool(False),
+            "sensivityArg": int(0),
+            "intensivityArg": int(0)
         }
 
     def connect(self, ip, port):
         self._sender = sender.Sender(ip, port)
-        self._sender.packageFormat = "fiiff5f?"
+        self._sender.packageFormat = "fbbff5f?bb"
         self._sender.connect()
 
     def disconnect(self):
@@ -41,7 +43,7 @@ class SocketRobot:
             self._argDict["setCameraArg"], self._argDict["turnFirstAxisArg"],
             self._argDict["turnSecondAxisArg"], self._argDict["turnThirdAxisArg"],
             self._argDict["turnFourthAxisArg"], self._argDict["turnFifthAxisArg"],
-            self._argDict["setLightArg"]
+            self._argDict["AutoArg"], self._argDict["sensivityArg"], self._argDict["intensivityArg"],
         ))
 
     def turnForward(self, scale):  # scale - значение из диапазона (-1, 1)
@@ -69,8 +71,12 @@ class SocketRobot:
         self._argDict["turnFourthAxisArg"] = float(remapScale(scale4ax))
         self._argDict["turnFifthAxisArg"] = float(remapScale(scale5ax))
 
-    def setLight(self, pos):
-        self._argDict["setLightArg"] = bool(pos)
+    def setAutoParam(self, sens, intens):
+        self._argDict["sensivityArg"] = int(sens)
+        self._argDict["intensivityArg"] = int(intens)
+
+    def setAuto(self, pos):
+        self._argDict["AutoArg"] = bool(pos)
 
     @property
     def exist(self):

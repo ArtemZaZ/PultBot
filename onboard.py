@@ -4,12 +4,20 @@
 from bot import config
 from bot.control import Control
 from bot import rpicam
+from bot.framehandler import FrameHandler
 import time
 
-rpiCamStreamer = rpicam.RPiCamStreamer(config.VIDEO_FORMAT, config.VIDEO_RESOLUTION, config.VIDEO_FRAMERATE)
+
+def onFrameCallback(*args):  # обработчик события 'получен кадр'
+    frameHandlerThread.setFrame(*args)  # задали новый кадр
+
+
+rpiCamStreamer = rpicam.RPiCamStreamer(config.VIDEO_FORMAT, config.VIDEO_RESOLUTION, config.VIDEO_FRAMERATE, onFrameCallback)
 rpiCamStreamer.setPort(config.RTP_PORT)
 rpiCamStreamer.setHost(config.IP)
 rpiCamStreamer.setRotation(180)
+
+frameHandlerThread = FrameHandler(rpiCamStreamer, config.onFrameRequest)
 
 control = Control()
 
@@ -23,9 +31,13 @@ control.connectToEvent(config.turnSecondAxisArg, "turnSecondAxisArg")
 control.connectToEvent(config.turnThirdAxisArg, "turnThirdAxisArg")
 control.connectToEvent(config.turnFourthAxisArg, "turnFourthAxisArg")
 control.connectToEvent(config.turnFifthAxisArg, "turnFifthAxisArg")
-control.connectToEvent(config.setLight, "setLight")
+control.connectToEvent(config.setAuto, "setAuto")
+control.connectToEvent(config.setSensivity, "setSensivityArg")
+control.connectToEvent(config.setIntensivity, "setSensivityArg")
+
 
 rpiCamStreamer.start()  # запускаем трансляцию
+frameHandlerThread.start()  # запускаем обработку
 config.initializeAll()
 
 try:
@@ -33,7 +45,7 @@ try:
 except Exception as e:
     raise ConnectionError("Не удалось подключиться к ", (config.IP, config.PORT), str(e))
 
-while True:     # бесконечный цикл
+while True:  # бесконечный цикл
     try:
         time.sleep(10)
     except KeyboardInterrupt:
