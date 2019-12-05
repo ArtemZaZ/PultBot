@@ -18,12 +18,9 @@ class Sender(threading.Thread):
 
     def connect(self):
         if not self._connected:
-            try:
-                self._sock.connect((self._ip, self._port))
-                self._connected = True
-                self.start()
-            except:
-                print("can't connect to", self._ip)
+            self._sock.connect((self._ip, self._port))
+            self._connected = True
+            self.start()
 
     def disconnect(self):
         self._sock.close()

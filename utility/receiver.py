@@ -2,7 +2,7 @@ import socket
 import time
 import threading
 import struct
-import RTCEventMaster
+from utility import eventmaster
 
 
 class Receiver(threading.Thread):
@@ -13,23 +13,20 @@ class Receiver(threading.Thread):
         self._port = port
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._conn = None
-        self._exit = False
-        self._eventDict = {"onReceive": RTCEventMaster.EventBlock("onReceive")}
-        self._eventMaster = RTCEventMaster.EventMaster()
+        self.__exit = False
+        self._eventDict = {"onReceive": eventmaster.Event("onReceive")}
+        self._eventMaster = eventmaster.EventMaster()
         self._eventMaster.append(self._eventDict.get("onReceive"))
         self._eventMaster.start()
-        self._packageFormat = 'ffff'
+        self._packageFormat = None
 
     def connect(self):
         if not self._connected:
-            try:
-                self._sock.bind((self._ip, self._port))
-                self._sock.listen(1)
-                self._conn, _ = self._sock.accept()
-                self._connected = True
-                self.start()
-            except:
-                print("can't connect to", self._ip)
+            self._sock.bind((self._ip, self._port))
+            self._sock.listen(1)
+            self._conn, _ = self._sock.accept()
+            self._connected = True
+            self.start()
 
     def disconnect(self):
         self._sock.close()
@@ -38,17 +35,17 @@ class Receiver(threading.Thread):
     def connectToEvent(self, foo, toEvent):
         event = self._eventDict.get(toEvent)
         if event:
-            event.setfun(foo)
+            event.connect(foo)
         else:
-            print("Такого события нет")
+            raise KeyError(toEvent, ": такого события нет")
 
     def run(self):
-        while not self._exit:
+        while not self.__exit:
             try:
                 data = self._conn.recv(struct.calcsize(self._packageFormat))
                 self._eventDict.get("onReceive").push(struct.unpack(self._packageFormat, data))
-            except:
-                print("Проблемы с приемом")
+            except Exception as e:
+                print("Проблемы с приемом: " + str(e))
             time.sleep(0.01)
 
     @property
