@@ -82,3 +82,6 @@ while True:  # бесконечный цикл
     except KeyboardInterrupt:
         con.exit()
         break
+    except Exception as e:
+        print(e)
+
