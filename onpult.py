@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-vsssss
 import time
 
 import cv2
@@ -15,7 +17,6 @@ try:
 except Exception as e:
     raise ConnectionError("Не удалось подключиться к ", config.IP, str(e))
 
-
 qrdata = None
 
 
@@ -30,22 +31,23 @@ def printQR(frame):
                     qrdata = data
                     print("QR CODE: ", data)
 
+
 con.start()
 camera = GstCV.CVGstreamer(config.IP, 5000, 5001, 5005, toAVS=False, codec="JPEG")
 camera.start()
 
 WIDTH, HEIGHT = (640, 360)
-SENSIVITY = 80     # чувствительность автономки
-INTENSIVITY = 0   # порог интенсивности
-r = int(WIDTH * 1.3 / 6 + 0), int(HEIGHT * 1 / 5 + 0), int(WIDTH * 3.25 / 6 + 0), int(HEIGHT * 4 / 5 - 20)  # прямоугольник, выделяемый в кадре для OpenCV: x, y, width, height
+SENSIVITY = 80  # чувствительность автономки
+INTENSIVITY = 0  # порог интенсивности
+r = int(WIDTH * 1.3 / 6 + 0), int(HEIGHT * 1 / 5 + 0), int(WIDTH * 3.25 / 6 + 0), int(
+    HEIGHT * 4 / 5 - 20)  # прямоугольник, выделяемый в кадре для OpenCV: x, y, width, height
 
-
-while True:     # бесконечный цикл
+while True:  # бесконечный цикл
     try:
 
         if camera.cvImage is not None:
             printQR(camera.cvImage)
-            frame = camera.cvImage[r[1]:(r[1] + r[3]), r[0]:(r[0] + r[2])]  # r - прямоугольник: x, y, width, height
+            frame = camera.cvImage[r[1]:(r[1] + r[3]), r[0]:(r[0] + r[2])].copy()  # r - прямоугольник: x, y, width, height
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             intensivity = int(gray.mean())
             if intensivity < INTENSIVITY:
@@ -69,14 +71,13 @@ while True:     # бесконечный цикл
                 diff = cx / (r[2] / 2) - 1
             else:  # если не нашли контур
                 print("I don't see the line")
-            cv2.imshow("YES", frame)
+            #cv2.imshow("YES", frame)
             cv2.imshow("NONE", camera.cvImage)
             cv2.imshow("bin", binary)
-            cv2.imshow("gray", gray)
+            #cv2.imshow("gray", gray)
             cv2.waitKey(1)
         time.sleep(0.05)
 
     except KeyboardInterrupt:
         con.exit()
         break
-

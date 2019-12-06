@@ -23,7 +23,10 @@ class Control(threading.Thread):
         self._turnScale = 0.0
         self._rotateScale = 0.0
         self._manipulatorScaleAxis = [0.0, 0.0, 0.0, 0.0, 0.0]  # позиция манипулятора
+        self._manipulatorState = False  # флаг положения манипулятора сложен/разложен
         self._manipulatorMoveStep = 0.01     # шаг движения манипулятора
+        self._cameraMoveStep = 0.01     # шаг поворота сервы камеры
+        self._cameraScale = 0.0     # позиция камеры
         self._selectedAxis = 1  # выбранная ось поворота манипулятора
         self.__exit = False
 
@@ -73,13 +76,23 @@ class Control(threading.Thread):
                     self._rotateScale = 1.0
                 # вращаем выбранную ось манипулятора
                 if key.char == 'q':
-                    self._manipulatorScaleAxis[self._selectedAxis - 1] = remapScale(
-                        self._manipulatorScaleAxis[self._selectedAxis - 1] - self._manipulatorMoveStep)
-                    self.robot.moveManipulator(*self._manipulatorScaleAxis)
+                    if not self._manipulatorState:
+                        self._manipulatorScaleAxis[self._selectedAxis - 1] = remapScale(
+                            self._manipulatorScaleAxis[self._selectedAxis - 1] - self._manipulatorMoveStep)
+                        self.robot.moveManipulator(*self._manipulatorScaleAxis)
                 elif key.char == 'e':
-                    self._manipulatorScaleAxis[self._selectedAxis - 1] = remapScale(
-                        self._manipulatorScaleAxis[self._selectedAxis - 1] + self._manipulatorMoveStep)
-                    self.robot.moveManipulator(*self._manipulatorScaleAxis)
+                    if not self._manipulatorState:
+                        self._manipulatorScaleAxis[self._selectedAxis - 1] = remapScale(
+                            self._manipulatorScaleAxis[self._selectedAxis - 1] + self._manipulatorMoveStep)
+                        self.robot.moveManipulator(*self._manipulatorScaleAxis)
+
+                if key.char == 't':
+                    self._cameraScale = remapScale(self._cameraScale + self._cameraMoveStep)
+                    self.robot.setCamera(self._cameraScale)
+                elif key.char == 'g':
+                    self._cameraScale = remapScale(self._cameraScale - self._cameraMoveStep)
+                    self.robot.setCamera(self._cameraScale)
+
             except AttributeError:
                 pass
 
@@ -105,9 +118,11 @@ class Control(threading.Thread):
 
                 if key.char == 'c':
                     if self._cameraPos:
-                        self.robot.setCamera(-0.5)
+                        self._cameraScale = -0.5
+                        self.robot.setCamera(self._cameraScale)
                     else:
-                        self.robot.setCamera(0.4)
+                        self._cameraScale = 0.4
+                        self.robot.setCamera(self._cameraScale)
                     self._cameraPos = not self._cameraPos
                     self.robot.sendPackage()
 
@@ -123,6 +138,14 @@ class Control(threading.Thread):
                     self.robot.motorSpeed -= config.SPEED_CHANGE_STEP
                 elif key.char == 'x':
                     self.robot.motorSpeed += config.SPEED_CHANGE_STEP
+
+                if key.char == 'm':
+                    if self._manipulatorState:
+                        self._manipulatorScaleAxis = [0.0, 0.65, 0.15, 0.0, 0.0]
+                    else:
+                        self._manipulatorScaleAxis = [0.0, -0.84, 0.98, 0.0, 0.0]
+                    self._manipulatorState = not self._manipulatorState
+                    self.robot.moveManipulator(*self._manipulatorScaleAxis)
 
             except AttributeError:
                 pass
