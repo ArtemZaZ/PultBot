@@ -36,7 +36,7 @@ con.start()
 camera = GstCV.CVGstreamer(config.IP, 5000, 5001, 5005, toAVS=False, codec="JPEG")
 camera.start()
 
-WIDTH, HEIGHT = (320, 180)
+WIDTH, HEIGHT = (640, 360)
 SENSIVITY = 80  # чувствительность автономки
 INTENSIVITY = 0  # порог интенсивности
 r = int(WIDTH * 1.3 / 6 + 0), int(HEIGHT * 1 / 5 + 0), int(WIDTH * 3.25 / 6 + 0), int(
@@ -65,12 +65,13 @@ while True:  # бесконечный цикл
                 if M['m00'] != 0:
                     cx = int(M['m10'] / M['m00'])  # координата центра по х
                     cy = int(M['m01'] / M['m00'])  # координата центра по у
-                cv2.line(frame, (cx, 0), (cx, r[3]), (255, 0, 0), 1)  # рисуем линни
-                cv2.line(frame, (0, cy), (r[2], cy), (255, 0, 0), 1)
+                #cv2.line(frame, (cx, 0), (cx, r[3]), (255, 0, 0), 1)  # рисуем линни
+                #cv2.line(frame, (0, cy), (r[2], cy), (255, 0, 0), 1)
                 cv2.drawContours(frame, contours, -1, (0, 255, 0), 1)  # рисуем контур
                 diff = cx / (r[2] / 2) - 1
             else:  # если не нашли контур
-                print("I don't see the line")
+                pass
+                #print("I don't see the line")
             #cv2.imshow("YES", frame)
             cv2.imshow("NONE", camera.cvImage)
             cv2.imshow("bin", binary)

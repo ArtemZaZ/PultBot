@@ -145,8 +145,9 @@ class CVGstreamer:
         self.sinkpad0 = Gst.Element.get_static_pad(self.rtcpsink0, 'sink')
         self.lres0 = Gst.Pad.link(self.srcpad0, self.sinkpad0)
 
-        self.rtpbin.set_property('drop-on-latency', True)
-        self.rtpbin.set_property('buffer-mode', 1)
+        self.rtpbin.set_property('latency', 200)
+        self.rtpbin.set_property('drop-on-latency', True)  # отбрасывать устаревшие кадры
+        self.rtpbin.set_property('buffer-mode', 4)
 
         self.rtpbin.connect('pad-added', pad_added_cb, self.videodepay0)
 

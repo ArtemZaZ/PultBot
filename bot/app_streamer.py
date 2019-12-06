@@ -102,7 +102,7 @@ class AppSrcStreamer(object):
         self.udpsink_rtpout = Gst.ElementFactory.make('udpsink', 'udpsink_rtpout')
         # self.udpsink_rtpout.set_property('host', self._host)
         # self.udpsink_rtpout.set_property('port', self._port)
-        self.udpsink_rtpout.set_property('sync', True)
+        self.udpsink_rtpout.set_property('sync', False)
         self.udpsink_rtpout.set_property('async', False)
 
         self.udpsink_rtcpout = Gst.ElementFactory.make('udpsink', 'udpsink_rtcpout')
