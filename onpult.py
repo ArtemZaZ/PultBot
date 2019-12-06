@@ -36,7 +36,7 @@ con.start()
 camera = GstCV.CVGstreamer(config.IP, 5000, 5001, 5005, toAVS=False, codec="JPEG")
 camera.start()
 
-WIDTH, HEIGHT = (640, 360)
+WIDTH, HEIGHT = (320, 180)
 SENSIVITY = 80  # чувствительность автономки
 INTENSIVITY = 0  # порог интенсивности
 r = int(WIDTH * 1.3 / 6 + 0), int(HEIGHT * 1 / 5 + 0), int(WIDTH * 3.25 / 6 + 0), int(

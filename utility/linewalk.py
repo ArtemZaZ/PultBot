@@ -26,10 +26,10 @@ def lineOffset(intensivity, sensivity, frame):  # смещение линии н
         if M['m00'] != 0:
             cx = int(M['m10'] / M['m00'])  # координата центра по х
             cy = int(M['m01'] / M['m00'])  # координата центра по у
-        cv2.line(frame, (cx, 0), (cx, shape[1]), (255, 0, 0), 1)  # рисуем линни
-        cv2.line(frame, (0, cy), (shape[0], cy), (255, 0, 0), 1)
+        #cv2.line(frame, (cx, 0), (cx, shape[1]), (255, 0, 0), 1)  # рисуем линни
+        #cv2.line(frame, (0, cy), (shape[0], cy), (255, 0, 0), 1)
 
-        cv2.drawContours(frame, contours, -1, (0, 255, 0), 1)  # рисуем контур
+        #cv2.drawContours(frame, contours, -1, (0, 255, 0), 1)  # рисуем контур
 
         diffx = cx/(shape[0]/2) - 1
         diffy = cy/(shape[1]/2) - 1
